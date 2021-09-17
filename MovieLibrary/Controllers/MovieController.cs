@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using MovieLibrary.Models;
@@ -13,11 +14,13 @@ namespace MovieLibrary.Controllers
     {
         private readonly ILogger<MovieController> _logger;
         private readonly IMovieService _movieService;
+        private readonly IMediator _mediator;
 
-        public MovieController(ILogger<MovieController> logger, IMovieService movieService)
+        public MovieController(ILogger<MovieController> logger, IMovieService movieService, IMediator mediator)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _movieService = movieService ?? throw new ArgumentNullException(nameof(movieService));
+            _mediator = mediator;
         }
 
         [HttpPost]
@@ -40,7 +43,12 @@ namespace MovieLibrary.Controllers
         {
             try
             {
-                var result = await _movieService.Read(id);
+                var request = new GetMovieQuery()
+                {
+                    Id = id
+                };
+                
+                var result = await _mediator.Send(request);
                 if (result == null)
                 {
                     return NotFound();

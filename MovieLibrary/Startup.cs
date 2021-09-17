@@ -1,3 +1,5 @@
+using System.Reflection;
+using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -23,6 +25,7 @@ namespace MovieLibrary
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+            services.AddMediatR(Assembly.Load("MovieLibrary.Service"));
             
             var dbAssemblyName = typeof(MovieLibraryDbContext).Namespace;
             
@@ -61,6 +64,7 @@ namespace MovieLibrary
         {
             services.AddScoped<IMovieService, MovieService>();
             services.AddScoped<IMovieRepository, MovieRepository>();
+            services.AddScoped<GetMovieQueryHandler>();
         }
     }
 }
